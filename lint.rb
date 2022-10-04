@@ -14,6 +14,9 @@ module Homebrew
       switch "--fix", description: "Fix style violations automatically using RuboCop's auto-correct feature."
       switch "--online", description: "Run additional, slower style checks that require a network connection."
       flag   "--format=", "-f=", description: "Choose an output <format>ter."
+      switch "--install", "-i", description: "Also run [`un`]`install` and any `test` steps provided in <formula>e."
+
+      conflicts "--style", "--install"
 
       named_args %i[file tap formula cask], min: 1
     end
@@ -32,7 +35,9 @@ module Homebrew
   end
 
   def lint
-    %w[BOOTSNAP DEVELOPER NO_AUTO_UPDATE].each {|var| ENV["HOMEBREW_#{var}"] ||= true.to_s }
+    %w[BOOTSNAP DEVELOPER NO_AUTO_UPDATE NO_INSTALL_UPGRADE].each do |var|
+      ENV["HOMEBREW_#{var}"] ||= true.to_s
+    end
 
     args = lint_args.parse
 
@@ -72,6 +77,20 @@ module Homebrew
       livecheck << "--debug" if @verbose.any?
 
       brew livecheck, path if appcast.nil?
+
+      next unless args.install?
+
+      installed = info.installed?
+      install  = %w[install --force], log
+      install += %w[--build-from-source --include-test] if info.formula?
+
+      brew install, "--#{info.format}", path unless installed
+      brew "test", *log, path if info.formula?
+
+      uninstall = "uninstall", info.cask? ? "--zap" : "--ignore-dependencies", log
+      uninstall.delete "--zap" if installed
+
+      brew uninstall, "--#{info.format}", path
     end
 
     Kernel.exit @exitstatus

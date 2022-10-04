@@ -35,7 +35,7 @@ jobs:
 `lint` [command]
 ----------------
 Easily [`lint`] [_formula_]e, [_cask_]s, and [Ruby] files with a single command. `lint` is a simple
-Home`brew` _[external command]_ wrapper around existing [`audit`], [`style`], and [`livecheck`] commands.
+Home`brew` _[external command]_ wrapper around existing [`audit`], [`style`], [`livecheck`] and other [command]s.
 
 Options
 -------
@@ -47,6 +47,7 @@ Options
 | `--fix`               | Fix style violations automatically using RuboCop's auto-correct feature. |
 | `--online`            | Run additional, slower style checks that require a network connection.   |
 | `-`[`-f`]`ormat`[`=`] | Choose an output [`format`ter].                                          |
+| `--install`           | Also run [[`un`]][`install`] along with any [`test`] step in formulae.   |
 
 Config
 ------
@@ -89,6 +90,9 @@ License
 [`audit`]:            https://docs.brew.sh/Manpage#audit-options-formulacask-
 [`style`]:            https://docs.brew.sh/Manpage#style-options-filetapformulacask-
 [`livecheck`]:        https://docs.brew.sh/Manpage#livecheck-lc-options-formulacask-
+[`install`]:          https://docs.brew.sh/Manpage#install-options-formulacask-
+[`un`]:               https://docs.brew.sh/Manpage#uninstall-remove-rm-options-installed_formulainstalled_cask-
+[`test`]:             https://docs.brew.sh/Manpage#test-options-installed_formula-
 
 [`lint`]:             https://en.wikipedia.org/wiki/Lint_(software)
 [`lint` command]:     #lint-command
