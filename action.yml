@@ -1,0 +1,43 @@
+name: Homebrew Pipeline
+author: Daniel Bayley
+description: GitHub action to provide simple CI for your Homebrew tap.
+branding:
+  icon: check
+  color: green
+
+inputs:
+  include:
+    description: Extended glob pattern matching files to check.
+    default: '**.rb'
+    required: false
+
+runs:
+  using: composite
+  steps:
+  - name: Set up Homebrew
+    id: set-up-homebrew
+    uses: Homebrew/actions/setup-homebrew@master
+
+  - name: Cache Homebrew Bundler RubyGems
+    id: cache
+    uses: actions/cache@v1
+    with:
+      path: ${{steps.set-up-homebrew.outputs.gems-path}}
+      key: ${{runner.os}}-rubygems-${{steps.set-up-homebrew.outputs.gems-hash}}
+      restore-keys: ${{runner.os}}-rubygems-
+
+  - name: Install Homebrew Bundler RubyGems
+    if: steps.cache.outputs.cache-hit != 'true'
+    shell: sh
+    run: brew install-bundler-gems
+
+  - name: CI
+    id: homebrew-pipeline
+    env:
+      HOMEBREW_GITHUB_API_TOKEN: ${{github.token}}
+
+    shell: zsh --no-rcs --extended-glob --glob-star-short {0}
+    run: |
+      brew test-bot --only-cleanup-before
+      brew test-bot --only-setup
+      brew tap $GITHUB_ACTION_PATH:h:h:t/$GITHUB_ACTION_PATH:h:t
