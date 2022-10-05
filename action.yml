@@ -47,4 +47,4 @@ runs:
       brew tap $GITHUB_ACTION_PATH:h:h:t/$GITHUB_ACTION_PATH:h:t
 
       if (${{inputs.exclude != ''}}) exclude="~${{inputs.exclude}}"
-      brew lint --online --install ${{inputs.include}}$~exclude --verbose --format github
+      brew lint --online --install ${{inputs.include}}$~exclude(^@) --verbose --format github
