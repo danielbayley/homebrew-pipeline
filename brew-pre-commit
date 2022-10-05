@@ -1,0 +1,3 @@
+#! /bin/zsh --no-rcs
+git diff --staged --name-only --diff-filter ACM |
+grep \.rb$ | xargs brew lint --fail-fast

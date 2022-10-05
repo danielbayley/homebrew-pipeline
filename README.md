@@ -41,14 +41,14 @@ Options
 -------
 `brew lint` [`--option`s] `file`s|`tap`|`formula`e|`cask`s […]
 
-| Option                | Description                                                              |
-|:----------------------|:-------------------------------------------------------------------------|
-| `--style`             | Only run [`rubocop`] style checks.                                       |
-| `--fail-fast`/`--ff`  | Stop after the first file containing offenses.                           |
-| `--fix`               | Fix style violations automatically using RuboCop's auto-correct feature. |
-| `--online`            | Run additional, slower style checks that require a network connection.   |
-| `-`[`-f`]`ormat`[`=`] | Choose an output [`format`ter].                                          |
-| `--install`           | Also run [[`un`]][`install`] along with any [`test`] step in formulae.   |
+| Option                | Description                                                                                    |
+|:----------------------|:-----------------------------------------------------------------------------------------------|
+| `--style`             | Only run [`rubocop`] style checks.                                                             |
+| `--fail-fast`/`--ff`  | Stop after the first file containing offenses. Particularly useful in a _[`pre-commit` hook]_. |
+| `--fix`               | Fix style violations automatically using RuboCop's auto-correct feature.                       |
+| `--online`            | Run additional, slower style checks that require a network connection.                         |
+| `-`[`-f`]`ormat`[`=`] | Choose an output [`format`ter].                                                                |
+| `--install`           | Also run [[`un`]][`install`] along with any [`test`] step in formulae.                         |
 
 Config
 ------
@@ -74,6 +74,16 @@ export HOMEBREW_LIVECHECK_OPTS=--debug
 
 Running `brew lint` in a [`GITHUB_ACTIONS`][action] environment implies `--online`,
 `--install`/`test` steps, and output `--format github`.
+
+`pre-commit` _[hook]_
+---------------------
+The supplied [`pre-commit`] command is available for the corresponding [`git`] hook.
+It will detect any [`--staged`] `**.rb` files, and `--fail-fast`, stopping after the first file containing offenses.
+For example, you might add the following to `.git/hooks/pre-commit` or `git config core.hooksPath`:
+~~~ sh
+#! /bin/sh
+brew pre-commit
+~~~
 
 Install
 -------
@@ -118,6 +128,12 @@ License
 [config]:             https://github.com/Homebrew/brew/blob/master/Library/.rubocop.yml
 [rubocopts]:          https://docs.rubocop.org/rubocop/usage/basic_usage#command-line-flags
 [`format`ter]:        https://docs.rubocop.org/rubocop/formatters
+
+[`git`]:              https://git-scm.com
+[`--staged`]:         https://git-scm.com/docs/git-diff#Documentation/git-diff.txt-emgitdiffemltoptionsgt--cached--merge-baseltcommitgt--ltpathgt82308203
+[hook]:               https://git-scm.com/docs/githooks
+[`pre-commit` hook]:  #pre-commit-hook
+[`pre-commit`]:       https://git-scm.com/docs/githooks#_pre_commit
 
 [_glob_ pattern]:     https://globster.xyz
 [extended]:           https://zsh.sourceforge.io/Doc/Release/Options.html#index-brace-expansion_002c-extending
