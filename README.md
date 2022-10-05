@@ -6,10 +6,11 @@ GitHub [Action] to provide a simple [CI] pipeline for your Homebrew _[tap]_,
 using [`test-bot`] and the included [`lint` command].
 
 Usage
--------------------------------------------------------------------------------------------
-| [Input]   | Required | Default | Description                                            |
-|:----------|:--------:|:--------|:-------------------------------------------------------|
-| `include` |  false   | `**.rb` | _[Extended]_ [_glob_ pattern] matching files to check. |
+---------------------------------------------------------------------------------------------------
+| [Input]   | Required | Default | Description                                                    |
+|:----------|:--------:|:--------|:---------------------------------------------------------------|
+| `include` |  false   | `**.rb` | _Extended_ [_glob_ pattern] matching files to check.           |
+| `exclude` |  false   |         | [Extended] glob pattern matching files to exclude from checks. |
 
 Example
 -------
@@ -30,6 +31,8 @@ jobs:
       uses: danielbayley/homebrew-pipeline@main
       env:
         ACTIONS_STEP_DEBUG: ${{secrets.ACTIONS_STEP_DEBUG}}
+      with:
+        exclude: test/**.rb
 ~~~
 
 `lint` [command]

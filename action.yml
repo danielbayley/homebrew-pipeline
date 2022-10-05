@@ -11,6 +11,10 @@ inputs:
     default: '**.rb'
     required: false
 
+  exclude:
+    description: Extended glob pattern matching files to exclude from checks.
+    required: false
+
 runs:
   using: composite
   steps:
@@ -41,4 +45,6 @@ runs:
       brew test-bot --only-cleanup-before
       brew test-bot --only-setup
       brew tap $GITHUB_ACTION_PATH:h:h:t/$GITHUB_ACTION_PATH:h:t
-      brew lint --online --install ${{inputs.include}} --verbose --format github
+
+      if (${{inputs.exclude != ''}}) exclude="~${{inputs.exclude}}"
+      brew lint --online --install ${{inputs.include}}$~exclude --verbose --format github
