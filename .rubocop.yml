@@ -1,0 +1,36 @@
+inherit_from: /usr/local/Homebrew/Library/.rubocop.yml
+
+Sorbet/FalseSigil:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+
+Style/TernaryParentheses:
+  EnforcedStyle: require_no_parentheses
+Style/NestedModifier:
+  Enabled: false
+Style/SoleNestedConditional:
+  AllowModifier: true
+Style/IfUnlessModifierOfIfUnless:
+  Enabled: false
+
+Layout/SpaceInsideBlockBraces:
+  SpaceBeforeBlockParameters: false
+
+Style/SymbolArray:
+  EnforcedStyle: percent
+
+Homebrew/ShellCommands:
+  Enabled: false
