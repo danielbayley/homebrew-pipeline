@@ -8,7 +8,13 @@ module Homebrew
 
   def lint_args
     Homebrew::CLI::Parser.new do
-      description "Easily `lint` <formula>e, <cask>s, and Ruby <file>s with a single command."
+      description <<~EOS
+        Easily `lint` <formula>e, <cask>s, and Ruby <file>s with a single command.
+
+        Any `HOMEBREW_`[`RUBOCOP`|`LIVECHECK`]`_OPTS` will be appended to `rubocop` and `livecheck` commands, respectively. For example, you might add something like the following to your `~/.zshenv`:
+          `export HOMEBREW_RUBOCOP_OPTS="--display-cop-names --format simple"`
+          `export HOMEBREW_LIVECHECK_OPTS=--debug`
+      EOS
 
       switch "--style", description: "Only run `rubocop` style checks."
       switch "--fix", description: "Fix style violations automatically using RuboCop's auto-correct feature."
@@ -61,7 +67,11 @@ module Homebrew
       no = "no-" if @verbose.empty?
       style.push "--#{no}display-cop-names", @verbose.any? ? "--extra-details" : "--disable-pending-cops"
       style << "--debug" if args.debug?
-      style.push "--format", args.format || args.quiet? ? "quiet" : "clang"
+
+      style += ENV.fetch("HOMEBREW_RUBOCOP_OPTS", BLANK).split
+      if style.exclude? "--format"
+        style.push "--format", args.format || args.quiet? ? "quiet" : "clang"
+      end
 
       brew style, path
       next if info.nil? || args.style?
@@ -75,6 +85,7 @@ module Homebrew
 
       livecheck = %W[livecheck --#{info.format}]
       livecheck << "--debug" if @verbose.any?
+      livecheck += ENV.fetch("HOMEBREW_LIVECHECK_OPTS", BLANK).split
 
       brew livecheck, path if appcast.nil?
 

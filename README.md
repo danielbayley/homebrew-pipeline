@@ -62,6 +62,15 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 ~~~
 
+Environment
+-----------
+Any `HOMEBREW_`[[`RUBOCOP`][rubocopts]|[`LIVECHECK`]]`_OPTS` will be appended to `rubocop` and `livecheck` commands,
+respectively. For example, you might add something like the following to your [`~/.zshenv`]:
+~~~ sh
+export HOMEBREW_RUBOCOP_OPTS="--display-cop-names --format simple"
+export HOMEBREW_LIVECHECK_OPTS=--debug
+~~~
+
 Install
 -------
 ~~~ sh
@@ -78,6 +87,7 @@ License
 
 [action]:             https://docs.github.com/actions
 [ci]:                 https://docs.github.com/actions/automating-builds-and-tests/about-continuous-integration
+[environment]:        https://docs.github.com/actions/learn-github-actions/environment-variables
 [input]:              https://docs.github.com/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 
 [homebrew]:           https://brew.sh
@@ -102,7 +112,10 @@ License
 [`.rubocop.yml`]:     https://docs.rubocop.org/rubocop/configuration
 [`inherit_from`]:     https://docs.rubocop.org/rubocop/configuration.html#inheritance
 [config]:             https://github.com/Homebrew/brew/blob/master/Library/.rubocop.yml
+[rubocopts]:          https://docs.rubocop.org/rubocop/usage/basic_usage#command-line-flags
 [`format`ter]:        https://docs.rubocop.org/rubocop/formatters
 
 [_glob_ pattern]:     https://globster.xyz
 [extended]:           https://zsh.sourceforge.io/Doc/Release/Options.html#index-brace-expansion_002c-extending
+
+[`~/.zshenv`]:        https://zsh.sourceforge.io/Intro/intro_3.html
