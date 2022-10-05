@@ -66,7 +66,7 @@ module Homebrew
 
       exec HOMEBREW_BREW_FILE, "lint", *Dir[path/"**/*.rb"], *args.options_only if path.directory?
 
-      config = path.dirname.ascend.first(2).map {|tap| tap/".rubocop.yml" }.find(&:file?)
+      config = path.realpath.dirname.ascend.first(2).map {|tap| tap/".rubocop.yml" }.find(&:file?)
 
       style = %w[rubocop --only-recognized-file-types --force-exclusion]
       style.push "--config", HOMEBREW_LIBRARY/".rubocop.yml" if config.nil?
