@@ -17,6 +17,7 @@ module Homebrew
       EOS
 
       switch "--style", description: "Only run `rubocop` style checks."
+      switch "--fail-fast", "--ff", description: "Stop after the first file containing offenses."
       switch "--fix", description: "Fix style violations automatically using RuboCop's auto-correct feature."
       switch "--online", description: "Run additional, slower style checks that require a network connection."
       flag   "--format=", "-f=", description: "Choose an output <format>ter."
@@ -69,6 +70,7 @@ module Homebrew
 
       style = %w[rubocop --only-recognized-file-types --force-exclusion]
       style.push "--config", HOMEBREW_LIBRARY/".rubocop.yml" if config.nil?
+      style << "--fail-fast" if args.fail_fast?
       style += %w[--autocorrect-all --no-parallel] if args.fix?
 
       no = "no-" if @verbose.empty?
@@ -81,6 +83,8 @@ module Homebrew
       end
 
       brew style, path
+      break unless $CHILD_STATUS.success? if args.fail_fast?
+
       next if info.nil? || args.style?
 
       audit = %w[audit --skip-style --strict], log

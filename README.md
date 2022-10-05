@@ -44,6 +44,7 @@ Options
 | Option                | Description                                                              |
 |:----------------------|:-------------------------------------------------------------------------|
 | `--style`             | Only run [`rubocop`] style checks.                                       |
+| `--fail-fast`/`--ff`  | Stop after the first file containing offenses.                           |
 | `--fix`               | Fix style violations automatically using RuboCop's auto-correct feature. |
 | `--online`            | Run additional, slower style checks that require a network connection.   |
 | `-`[`-f`]`ormat`[`=`] | Choose an output [`format`ter].                                          |
