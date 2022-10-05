@@ -71,6 +71,9 @@ export HOMEBREW_RUBOCOP_OPTS="--display-cop-names --format simple"
 export HOMEBREW_LIVECHECK_OPTS=--debug
 ~~~
 
+Running `brew lint` in a [`GITHUB_ACTIONS`][action] environment implies `--online`,
+`--install`/`test` steps, and output `--format github`.
+
 Install
 -------
 ~~~ sh

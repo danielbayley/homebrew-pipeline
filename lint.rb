@@ -31,9 +31,14 @@ module Homebrew
   def self.brew(*options, path)
     options.flatten!.compact_blank!.uniq!
 
+    message = "brew #{options * SPACE}"
     path = path.sub Dir.home, "~"
-    puts Formatter.headline "brew #{options * SPACE} #{path}\n", color: :blue if @verbose.any?
 
+    if ENV["ACTIONS_STEP_DEBUG"].present?
+      puts "::debug file=#{path}::#{message}\n"
+    elsif @verbose.any?
+      puts Formatter.headline "#{message} #{path}\n", color: :blue
+    end
     _system HOMEBREW_BREW_FILE, *options, path
     @exitstatus ||= 0
     @exitstatus += $CHILD_STATUS.exitstatus
@@ -41,6 +46,8 @@ module Homebrew
   end
 
   def lint
+    ARGV.push "--debug" if ENV["ACTIONS_STEP_DEBUG"].present?
+
     %w[BOOTSNAP DEVELOPER NO_AUTO_UPDATE NO_INSTALL_UPGRADE].each do |var|
       ENV["HOMEBREW_#{var}"] ||= true.to_s
     end
@@ -99,7 +106,7 @@ module Homebrew
       brew "test", *log, path if info.formula?
 
       uninstall = "uninstall", info.cask? ? "--zap" : "--ignore-dependencies", log
-      uninstall.delete "--zap" if installed
+      uninstall.delete "--zap" if ENV["GITHUB_ACTIONS"].nil? && installed
 
       brew uninstall, "--#{info.format}", path
     end
