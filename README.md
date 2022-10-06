@@ -32,7 +32,7 @@ jobs:
       env:
         ACTIONS_STEP_DEBUG: ${{secrets.ACTIONS_STEP_DEBUG}}
       with:
-        exclude: test/**.rb
+        skip-install: cask,tokens
 ~~~
 
 `lint` [command]
@@ -52,6 +52,7 @@ Options
 | `--online`            | Run additional, slower style checks that require a network connection.                         |
 | `-`[`-f`]`ormat`[`=`] | Choose an output [`format`ter].                                                                |
 | `--install`           | Also run [[`un`]][`install`] along with any [`test`] step in formulae.                         |
+| `--skip-install`      | Skip \[`un`]`install` steps for specified cask`,`s.                                            |
 
 Config
 ------

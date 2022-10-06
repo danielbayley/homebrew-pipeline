@@ -22,8 +22,10 @@ module Homebrew
       switch "--online", description: "Run additional, slower style checks that require a network connection."
       flag   "--format=", "-f=", description: "Choose an output <format>ter."
       switch "--install", "-i", description: "Also run [`un`]`install` and any `test` steps provided in <formula>e."
+      comma_array "--skip-install", description: "Skip [`un`]`install` steps for specified <cask>`,`s."
 
       conflicts "--style", "--install"
+      conflicts "--style", "--skip-install"
 
       named_args %i[file tap formula cask], min: 1
     end
@@ -101,6 +103,7 @@ module Homebrew
       brew livecheck, path if appcast.nil?
 
       next unless args.install?
+      next if args.skip_install&.include? info.token
 
       installed = info.installed?
       install  = %w[install --force], log
