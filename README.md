@@ -14,6 +14,7 @@ Usage
 
 Example
 -------
+`.github/workflows/ci.yml`:
 ~~~ yaml
 name: CI
 on:
@@ -59,7 +60,6 @@ Config
 Preferred style checks can be configured with a [`.rubocop.yml`] file in your [tap],
 which can [`inherit_from`] the base Homebrew [config]:
 ~~~ yaml
-#https://raw.githubusercontent.com/Homebrew/brew/master/Library/.rubocop.yml
 inherit_from: /usr/local/Homebrew/Library/.rubocop.yml
 # or /opt/homebrew/Homebrew/… if running on Apple Silicon.
 

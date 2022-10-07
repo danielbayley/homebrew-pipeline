@@ -11,7 +11,8 @@ module Homebrew
       description <<~EOS
         Easily `lint` <formula>e, <cask>s, and Ruby <file>s with a single command.
 
-        Any `HOMEBREW_`[`RUBOCOP`|`LIVECHECK`]`_OPTS` will be appended to `rubocop` and `livecheck` commands, respectively. For example, you might add something like the following to your `~/.zshenv`:
+        Any `HOMEBREW_`[`RUBOCOP`|`LIVECHECK`]`_OPTS` will be appended to `rubocop` and `livecheck` commands, respectively.
+        For example, you might add something like the following to your `~/.zshenv`:
           `export HOMEBREW_RUBOCOP_OPTS="--display-cop-names --format simple"`
           `export HOMEBREW_LIVECHECK_OPTS=--debug`
       EOS
@@ -62,7 +63,7 @@ module Homebrew
     end
     @verbose = args.values_at :verbose?, :debug?
 
-    args.named.map do |token_or_path|
+    args.named.each do |token_or_path|
       info = load_formula_or_cask token_or_path
       path = info&.path || token_or_path.to_p
 
