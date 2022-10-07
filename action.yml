@@ -43,8 +43,9 @@ runs:
     id: homebrew-pipeline
     env:
       HOMEBREW_GITHUB_API_TOKEN: ${{github.token}}
+      PROMPT4: "==> "
 
-    shell: zsh --no-rcs --extended-glob --glob-star-short {0}
+    shell: zsh --no-rcs --extended-glob --glob-star-short -x {0}
     run: |
       brew test-bot --only-cleanup-before
       brew test-bot --only-setup
