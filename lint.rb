@@ -46,7 +46,6 @@ module Homebrew
     _system HOMEBREW_BREW_FILE, *options, path
     @exitstatus ||= 0
     @exitstatus += $CHILD_STATUS.exitstatus
-    puts
   end
 
   def lint
