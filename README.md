@@ -19,10 +19,16 @@ Example
 name: CI
 on:
   push:
+    branches: [master, main]
+    paths: '**.rb'
+  pull_request:
     paths:
     - Formula/*.rb
     - Casks/*.rb
     - cmd/*rb
+    - lib/**.rb
+  schedule:
+  - cron: 0 5 * * *
 
 jobs:
   CI:
