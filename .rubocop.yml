@@ -23,8 +23,6 @@ Style/NestedModifier:
   Enabled: false
 Style/SoleNestedConditional:
   AllowModifier: true
-Style/IfUnlessModifierOfIfUnless:
-  Enabled: false
 
 Layout/SpaceInsideBlockBraces:
   SpaceBeforeBlockParameters: false

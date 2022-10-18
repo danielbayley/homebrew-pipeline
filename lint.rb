@@ -85,7 +85,7 @@ module Homebrew
       end
 
       brew style, path
-      break unless $CHILD_STATUS.success? if args.fail_fast?
+      break if $CHILD_STATUS.exitstatus.nonzero? && args.fail_fast?
 
       next if info.nil? || args.style?
 

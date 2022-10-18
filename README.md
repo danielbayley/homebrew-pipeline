@@ -28,7 +28,7 @@ on:
     - cmd/*rb
     - lib/**.rb
   schedule:
-  - cron: 0 5 * * *
+  - cron: 0 5 * * * # 5AM daily
 
 jobs:
   CI:
