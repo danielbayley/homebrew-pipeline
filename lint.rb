@@ -92,6 +92,7 @@ module Homebrew
       audit = %w[audit --skip-style --strict], log
       appcast = info.try :appcast
       audit.push args.online? ? "--online" : ("--appcast" if appcast.present?)
+      audit << "--new-#{info.format}" if info.tap&.user == "Homebrew"
       audit << "--audit-debug" if args.debug?
 
       brew audit, "--#{info.format}", path
