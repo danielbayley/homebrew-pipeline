@@ -1,0 +1,148 @@
+name: Homebrew Pipeline
+on:
+  workflow_call:
+    inputs:
+      include:
+        description: Extended glob pattern matching files to check.
+        type: string
+        default: '**.rb'
+        required: false
+
+      exclude:
+        description: Extended glob pattern matching files to exclude from checks.
+        type: string
+        default: 'exclude.*'
+        required: false
+
+      skip-install:
+        description: Skip un/install steps for specified cask,s.
+        type: string
+        #default: []
+        required: false
+
+  #push: TODO
+    #branches: $default-branch
+    #paths:
+    #- .github/workflows/*.y*ml
+    #- '**.rb'
+  #pull_request:
+    #paths:
+    #- .github/workflows/*.y*ml
+    #- '**.rb'
+  #schedule:
+  #- cron: 0 5 * * *
+
+jobs:
+  #Syntax: TODO
+  CI:
+    #needs: syntax
+    runs-on: macos-${{ matrix.os }}
+    strategy:
+      matrix:
+        os:   [11, 12]
+        arch: [arm64, x86_64]
+        #include: FIXME
+        #- os: 10.5
+          #arch: x86_64
+
+    #environment: ${{ inputs.environment }} TODO based on ${{ TODO.arch }}
+    env:
+      HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+      #HOMEBREW_GITHUB_ACTIONS: TODO
+      ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }}
+      #HOMEBREW_DEVELOPER: TODO
+      #HOMEBREW_BOOTSNAP: TODO
+      #HOMEBREW_NO_AUTO_UPDATE: TODO
+      PROMPT4: "==> "
+
+    steps:
+    - name: Simulate architecture
+      if: matrix.arch == 'arm64'
+      run: echo HOMEBREW_CHANGE_ARCH_TO_ARM=1 >> $GITHUB_ENV
+
+    - name: Set up environment
+      run: >
+        grep HOMEBREW_ <<< '${{ toJSON(secrets) }}' |
+        awk -F'[{":}]' '/HOMEBREW_/{ print $2"="$5 }' >> $GITHUB_ENV
+
+    # https://github.com/Homebrew/actions/tree/master/setup-homebrew#readme
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+
+    - name: Cache Homebrew Bundler RubyGems
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+        key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+        restore-keys: ${{ runner.os }}-rubygems-
+
+    - name: Install Homebrew Bundler RubyGems
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: brew install-bundler-gems #--groups=sorbet
+
+    - name: Debug environment
+      if: env.ACTIONS_STEP_DEBUG
+      run: >
+        echo '{
+          "github":  ${{ toJSON(github)  }},
+          "secrets": ${{ toJSON(secrets) }},
+          "env":     ${{ toJSON(env)     }}
+        }' | yq --prettyPrint
+
+      #brew config
+
+    - name: Set up lint command
+      run: |
+        brew test-bot --only-cleanup-before
+        brew test-bot --only-setup
+        brew tap danielbayley/pipeline
+
+    #- name: TODO
+      #id: TODO
+      #if: TODO
+      #run: |
+        #if (${{ inputs.exclude != '' }}) exclude="~${{ inputs.exclude }}"
+        #if (${{ inputs.skip-install != '' }}) skip="--skip-install ${{ inputs.skip-install }}"
+        #if (${{ secrets.ACTIONS_STEP_DEBUG != '' }}) debug=debug
+        #>> $GITHUB_ENV
+
+      #brew lint --online --install ${=skip//, /,} ${{ inputs.include }}$~exclude(^@) --${debug:=verbose} --format github
+
+    - name: Style checks
+      id: syntax #-only
+      #env:
+        #PROMPT4: "==> "
+      shell: zsh --no-rcs --err-exit --extended-glob --glob-star-short -x {0}
+      run: >
+        brew lint ${{ format('{0}~{1}(^@)', inputs.include, inputs.exclude) }}
+        --online --no-download
+        --${{ secrets.ACTIONS_STEP_DEBUG != '' && 'debug' || 'verbose' }}
+        --format github
+
+      #brew test-bot --only-tap-syntax
+
+    - name: Test un/install #${{ github.workflow }}
+      id: test-install
+      #audit #homebrew-pipeline
+      if: steps.syntax.outcome == 'success'
+      shell: zsh --no-rcs --err-exit --extended-glob --glob-star-short -x {0}
+      run: >
+        brew lint ${{ format('{0}~{1}(^@)', inputs.include, inputs.exclude) }}
+        --test
+        --skip-install ${{ inputs.skip-install }}
+        --${{ secrets.ACTIONS_STEP_DEBUG != '' && 'debug' || 'verbose' }}
+        --format github
+
+      #brew tap ${{ TODO.repository_owner }}/${{ job.id }}
+      #skip="--skip-install ${{ join(fromJson(inputs.skip-install)) }}
+      #brew lint --online --install ${=skip//, /,} ${{ inputs.include }}$~exclude(^@) --verbose --format github
+
+    - name: Post cleanup
+      if: always()
+      run: brew test-bot --only-cleanup-after
+
+  #TODO:
+    #name: TODO #${{ matrix.name }}
+    #needs: CI TODO #syntax

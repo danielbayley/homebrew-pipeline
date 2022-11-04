@@ -8,15 +8,23 @@ branding:
 inputs:
   include:
     description: Extended glob pattern matching files to check.
+    type: string
     default: '**.rb'
     required: false
 
   exclude:
     description: Extended glob pattern matching files to exclude from checks.
+    type: string
     required: false
 
   skip-install:
     description: Skip un/install steps for specified cask,s.
+    #type: string #array
+    required: false
+
+  secrets:
+    #description: TODO.
+    #type: TODO
     required: false
 
 runs:
@@ -25,33 +33,54 @@ runs:
   - name: Set up Homebrew
     id: set-up-homebrew
     uses: Homebrew/actions/setup-homebrew@master
+    #with:
+      #test-bot: false
 
   - name: Cache Homebrew Bundler RubyGems
     id: cache
     uses: actions/cache@v1
     with:
-      path: ${{steps.set-up-homebrew.outputs.gems-path}}
-      key: ${{runner.os}}-rubygems-${{steps.set-up-homebrew.outputs.gems-hash}}
-      restore-keys: ${{runner.os}}-rubygems-
+      path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+      key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+      restore-keys: ${{ runner.os }}-rubygems- # runner.os = macOS
 
   - name: Install Homebrew Bundler RubyGems
     if: steps.cache.outputs.cache-hit != 'true'
     shell: sh
     run: brew install-bundler-gems
 
+  #- name: Set environment variables
+    #if: runner.os == 'macOS'
+    #run: echo 'PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin' >> $GITHUB_ENV
+
+  - name: Set up environment
+    shell: sh
+    run: env >> $GITHUB_ENV
+
   - name: CI
     id: homebrew-pipeline
     env:
-      HOMEBREW_GITHUB_API_TOKEN: ${{github.token}}
+      HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+      #ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }} #fromJSON(inputs.secrets).ACTIONS_STEP_DEBUG }}
       PROMPT4: "==> "
 
-    shell: zsh --no-rcs --extended-glob --glob-star-short -x {0}
+      #PATH: /opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+      #HOMEBREW_CHANGE_ARCH_TO_ARM: TODO
+
+    shell: zsh --no-rcs --err-exit --extended-glob --glob-star-short -x {0}
     run: |
+      #arch -arm64 brew TODO #-x86_64
       brew test-bot --only-cleanup-before
       brew test-bot --only-setup
       brew tap $GITHUB_ACTION_PATH:h:h:t/$GITHUB_ACTION_PATH:h:t
 
-      if (${{inputs.exclude != ''}}) exclude="~${{inputs.exclude}}"
-      if (${{inputs.skip-install != ''}}) skip="--skip-install ${{inputs.skip-install}}"
+      if (${{ inputs.exclude != ''}}) exclude="~${{ inputs.exclude }}"
+      if (${{ inputs.skip-install != ''}}) skip="--skip-install ${{ inputs.skip-install }}"
 
-      brew lint --online --install ${=skip//, /,} ${{inputs.include}}$~exclude(^@) --verbose --format github
+      brew lint --online --install ${=skip//, /,} ${{ inputs.include }}$~exclude(^@) --verbose --format github
+
+  - name: Post cleanup
+    if: always()
+    shell: sh
+    run: brew test-bot --only-cleanup-after
